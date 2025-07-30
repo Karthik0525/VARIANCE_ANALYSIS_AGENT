@@ -1,0 +1,21 @@
+# Virtual Environment
+.venv/
+venv/
+*.venv
+
+# PyCharm specific files
+.idea/
+
+# Python cache files
+__pycache__/
+*.pyc
+
+# Generated data and reports
+*.csv
+/exports/*.pdf
+/exports/*.xlsx
+/exports/*.docx
+
+# Ignore operating system files
+.DS_Store
+Thumbs.db
