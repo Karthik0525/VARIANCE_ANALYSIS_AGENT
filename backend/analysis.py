@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import openai
+import time
 
 
 def clean_financial_data(df, current_col, prior_col):
@@ -85,7 +86,7 @@ def generate_ai_explanation(api_key, account_name, current_amount, prior_amount,
 
     try:
         response = openai.chat.completions.create(
-            model="gpt-4-turbo",
+            model="gpt-4o-mini",
             messages=[{"role": "user", "content": prompt}],
             max_tokens=100, temperature=0.4, n=1
         )
@@ -120,6 +121,7 @@ def process_data_and_generate_explanations(df, current_col, prior_col, dollar_th
             row['Dollar Variance'], row['Percent Variance'], row['Variance Type']
         )
         explanations.append(explanation)
+        time.sleep(1)
 
     material_df['Explanation'] = explanations
     return material_df

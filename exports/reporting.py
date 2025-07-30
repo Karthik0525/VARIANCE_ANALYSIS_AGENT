@@ -45,23 +45,33 @@ def generate_pdf_report(df, company_name, period_desc, dollar_thresh, percent_th
 
     pdf.set_font('Helvetica', 'B', 12)
     pdf.cell(0, 10, 'Detailed Analysis', 0, 1)
+    pdf.set_font('Helvetica', '', 10)
 
+    # --- THIS IS THE CORRECTED LAYOUT LOGIC ---
     for index, row in df.iterrows():
+        # Account Name and Variance Type
         pdf.set_font('Helvetica', 'B', 10)
-        pdf.multi_cell(0, 5, f"Account: {row['Account Name']} ({row['Variance Type']})", 0, 'L')
+        pdf.multi_cell(0, 5, f"Account: {row['Account Name']} ({row['Variance Type']})", ln=True)
 
+        # Financial Details
         pdf.set_font('Helvetica', '', 9)
-        pdf.multi_cell(0, 5, f"Explanation: {row['Explanation']}", 0, 'L')
-
         details = (
-            f"Current: ${row['Current Period']:,.2f} | "
-            f"Prior: ${row['Prior Period']:,.2f} | "
+            f"Current: ${row['Current Period']:,.2f}   |   "
+            f"Prior: ${row['Prior Period']:,.2f}   |   "
             f"Change: ${row['Dollar Variance']:,.2f} ({row['Percent Variance']:.1f}%)"
         )
-        pdf.cell(0, 5, details, 0, 1)
+        pdf.multi_cell(0, 5, details, ln=True)
+
+        # Explanation
+        pdf.set_font('Helvetica', 'I', 9) # Italic for the explanation
+        pdf.multi_cell(0, 5, f"Explanation: {row['Explanation']}", ln=True)
+
+        # Add a space between entries
         pdf.ln(5)
 
-    return pdf.output(dest='S').encode('latin1')
+    pdf_buffer = io.BytesIO()
+    pdf.output(pdf_buffer)
+    return pdf_buffer.getvalue()
 
 
 def generate_excel_report(input_df, analysis_df):
@@ -88,6 +98,7 @@ def generate_excel_report(input_df, analysis_df):
         worksheet.set_column('H:H', 60, wrap_format)  # Explanation
 
     return output.getvalue()
+
 
 
 def generate_word_report(df, company_name, period_desc):

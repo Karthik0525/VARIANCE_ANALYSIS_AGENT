@@ -71,7 +71,13 @@ if st.session_state.results_df is not None:
     if st.session_state.results_df.empty:
         st.info("No material variances were found based on the provided thresholds.")
     else:
-        st.dataframe(st.session_state.results_df, use_container_width=True)
+        st.dataframe(
+            st.session_state.results_df,
+            use_container_width=True,
+            column_config={
+                "Is Material": st.column_config.CheckboxColumn("Material?", default=False)
+            }
+        )
 
         st.header("4. Export Reports")
         cfg = st.session_state.config
@@ -83,8 +89,16 @@ if st.session_state.results_df is not None:
             pdf_data = generate_pdf_report(res_df, cfg['company'], cfg['period'], cfg['dollar'], cfg['percent'])
             st.download_button("⬇️ Download PDF Report", pdf_data, f"{cfg['company']}_Variance_Report.pdf", "application/pdf")
         with col2:
-            excel_data = generate_excel_report(orig_df, res_df)
-            st.download_button("⬇️ Download Excel Report", excel_data, f"{cfg['company']}_Variance_Report.xlsx")
+            st.download_button(
+                "⬇️ Download Excel Report",
+                data=generate_excel_report(orig_df, res_df),
+                file_name=f"{cfg['company']}_Variance_Report.xlsx",
+                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            )
         with col3:
-            word_data = generate_word_report(res_df, cfg['company'], cfg['period'])
-            st.download_button("⬇️ Download Word Report", word_data, f"{cfg['company']}_Variance_Report.docx")
+            st.download_button(
+                "⬇️ Download Word Report",
+                data=generate_word_report(res_df, cfg['company'], cfg['period']),
+                file_name=f"{cfg['company']}_Variance_Report.docx",
+                mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+            )
